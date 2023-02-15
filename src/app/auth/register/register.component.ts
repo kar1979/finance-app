@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -7,12 +10,16 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit{
-  formGroup!: FormGroup;
+  formNewUser!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.formGroup = this.formBuilder.group({
+    this.formNewUser = this.formBuilder.group({
       name: ['', Validators.required],
       email: ['', [ Validators.required, Validators.email ]],
       password: ['', Validators.required]
@@ -20,8 +27,25 @@ export class RegisterComponent implements OnInit{
   }
 
   createUser() {
-    console.log('Form Group', this.formGroup);
-    console.log('Valid?', this.formGroup.valid);
-    console.log('Value', this.formGroup.value);
+    if (this.formNewUser.invalid) {
+      return;
+    }
+    const { name, email, password } = this.formNewUser.value;
+    console.log('name', name);
+    console.log('email', email);
+    console.log('password', password);
+    this.authService.createUser(name, email, password).then(
+      credentials => {
+        console.log('credentials', credentials);
+        this.router.navigate(['/']);
+      }
+    ).catch(error => {
+      console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: error.message
+      })
+    });
   }
 }
