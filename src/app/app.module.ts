@@ -4,6 +4,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { ReactiveFormsModule } from "@angular/forms";
 //import { AngularFireModule } from '@angular/fire/compat';
 
+import { StoreModule } from "@ngrx/store";
+import { appReducer } from './app.reducer';
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
+
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
@@ -27,7 +31,7 @@ import { provideRemoteConfig,getRemoteConfig } from '@angular/fire/remote-config
 import { provideStorage,getStorage } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireModule } from '@angular/fire/compat';
-//import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @NgModule({
@@ -49,7 +53,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     
-    //AngularFirestoreModule,
+    AngularFirestoreModule,
     AngularFireAuthModule,
 
     provideFirebaseApp(() => initializeApp(environment.firebase)),
@@ -62,6 +66,12 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
     providePerformance(() => getPerformance()),
     provideRemoteConfig(() => getRemoteConfig()),
     provideStorage(() => getStorage()),
+
+    StoreModule.forRoot( appReducer ),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production
+    })
   ],
   providers: [
     ScreenTrackingService, UserTrackingService, AngularFirestore
